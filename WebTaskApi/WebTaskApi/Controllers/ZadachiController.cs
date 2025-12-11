@@ -1,23 +1,28 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebTaskApi.Interfaces;
 using WebTaskApi.Models.Zadacha;
 
 namespace WebTaskApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class ZadachiController : ControllerBase
+    [Route("[controller]")]
+    public class ZadachiController (IZadachiService zadachiService) : ControllerBase
     {
-        [HttpGet]
-        public IActionResult GetList()
+
+        [HttpGet()]
+        public async Task<IActionResult> Get()
         {
-            var items = new List<ZadachaItemModel>
-            {
-                new ZadachaItemModel{Id = 1, Name = "Mop the floor"},
-                new ZadachaItemModel{Id = 2, Name = "Walk the dog"},
-                new ZadachaItemModel{Id = 3, Name = "Feed the dog"},
-            };
+            var items = await zadachiService.GetAllAsync();
+
             return Ok(items);
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> Post([FromForm] ZadachaCreateModel model)
+        {
+            await zadachiService.CreateZadachyAsync(model);
+            return Ok(model);
         }
     }
 }
