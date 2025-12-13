@@ -25,24 +25,11 @@ import retrofit2.Response;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
-    ArrayList<ZadachaItemDTO> taskList = new ArrayList<>();
+    List<ZadachaItemDTO> taskList;
 
-    public TaskAdapter() {
-        RetrofitClient.getInstance().getZadachiApi().list()
-                .enqueue(new Callback<List<ZadachaItemDTO>>() {
-            @Override
-            public void onResponse(Call<List<ZadachaItemDTO>> call, Response<List<ZadachaItemDTO>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    taskList.addAll(response.body());
-                    notifyDataSetChanged();
-                }
-            }
+    public TaskAdapter(List<ZadachaItemDTO> taskList) {
+        this.taskList = taskList;
 
-            @Override
-            public void onFailure(Call<List<ZadachaItemDTO>> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
     }
 
     @NonNull
@@ -73,8 +60,26 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         notifyItemMoved(from, to);
     }
 
+    public void reload() {
+        taskList.clear();
+        RetrofitClient.getInstance().getZadachiApi().list().enqueue(new Callback<List<ZadachaItemDTO>>() {
+            @Override
+            public void onResponse(Call<List<ZadachaItemDTO>> call, Response<List<ZadachaItemDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    taskList.addAll(response.body());
+                    notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ZadachaItemDTO>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
     static class TaskViewHolder extends RecyclerView.ViewHolder {
-//зв'язує цей елемент з item_task layout
+
         TextView taskText;
         CheckBox taskCheckBox;
         ImageView taskImage;
