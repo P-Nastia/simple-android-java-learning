@@ -10,7 +10,7 @@ namespace WebTaskApi.Services;
 
 public class ZadachiService(AppDbContext context, IMapper mapper, IImageService imageService) : IZadachiService
 {
-    public async Task CreateZadachyAsync(ZadachaCreateModel model)
+    public async Task<ZadachaItemModel> CreateZadachyAsync(ZadachaCreateModel model)
     {
         var zadachaEntity = mapper.Map<ZadachaEntity>(model);
 
@@ -18,6 +18,9 @@ public class ZadachiService(AppDbContext context, IMapper mapper, IImageService 
 
         context.Zadachi.Add(zadachaEntity);
         await context.SaveChangesAsync();
+
+        var zadachaModel = mapper.Map<ZadachaItemModel>(zadachaEntity);
+        return zadachaModel;
     }
 
     public async Task<IEnumerable<ZadachaItemModel>> GetAllAsync()
