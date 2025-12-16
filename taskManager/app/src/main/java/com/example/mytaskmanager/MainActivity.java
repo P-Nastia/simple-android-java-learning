@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mytaskmanager.dto.zadachi.ZadachaItemDTO;
 import com.example.mytaskmanager.network.RetrofitClient;
+import com.example.mytaskmanager.utils.CommonUtils;
+import com.example.mytaskmanager.utils.MyLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,8 @@ public class MainActivity extends BaseActivity {
         });
 
         taskRecycler = findViewById(R.id.taskRecycler);
-        taskRecycler.setAdapter(new TaskAdapter(new ArrayList<>()));
+        taskRecycler.setAdapter(new TaskAdapter(new ArrayList<>(),
+                MainActivity.this::onClickEditZadacha));
         taskRecycler.setLayoutManager(
                 new androidx.recyclerview.widget.LinearLayoutManager(this)
         );
@@ -54,6 +57,7 @@ public class MainActivity extends BaseActivity {
                     goToAddTaskActivity();
                 }
         );
+        CommonUtils.showLoading();
         loadTaskList();
     }
 
@@ -63,8 +67,10 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onResponse(Call<List<ZadachaItemDTO>> call, Response<List<ZadachaItemDTO>> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            adapter = new TaskAdapter(response.body());
+                            adapter = new TaskAdapter(response.body(),
+                                    MainActivity.this::onClickEditZadacha);
                             taskRecycler.setAdapter(adapter);
+                            CommonUtils.hideLoading();
                         }
                     }
 
@@ -72,8 +78,17 @@ public class MainActivity extends BaseActivity {
                     public void onFailure(Call<List<ZadachaItemDTO>> call, Throwable t) {
                         t.printStackTrace();
                     }
+
                 });
+
     }
 
+    private void onClickEditZadacha(ZadachaItemDTO item){
+        Intent intent = new Intent(this, EditTaskActivity.class);
+        intent.putExtra("task_id", item.getId());
+        intent.putExtra("task_name", item.getName());
+        intent.putExtra("task_image", item.getImage());
+        this.startActivity(intent);
+    }
 
 }
