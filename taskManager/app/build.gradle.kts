@@ -61,8 +61,5 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:5.0.5")
     // https://mvnrepository.com/artifact/com.squareup.okhttp3/logging-interceptor
     implementation("com.squareup.okhttp3:logging-interceptor:5.3.2")
-    androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.ui.test.junit4)
-    debugImplementation(libs.ui.tooling)
-    debugImplementation(libs.ui.test.manifest)
+    implementation("com.github.yalantis:ucrop:2.2.11")
 }

@@ -29,7 +29,7 @@ public class MainActivity extends BaseActivity {
 
     RecyclerView taskRecycler;
     TaskAdapter adapter;
-
+    View accountButton;
     View addButton;
 
     @Override
@@ -57,6 +57,10 @@ public class MainActivity extends BaseActivity {
                     goToAddTaskActivity();
                 }
         );
+
+        accountButton = findViewById(R.id.accountButton);
+        accountButton.setOnClickListener(v->goToRegistration());
+
         CommonUtils.showLoading();
         loadTaskList();
     }
