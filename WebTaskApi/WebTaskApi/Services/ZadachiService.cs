@@ -14,7 +14,7 @@ public class ZadachiService(AppDbContext context, IMapper mapper, IImageService 
     {
         var zadachaEntity = mapper.Map<ZadachaEntity>(model);
 
-        zadachaEntity.Image = await imageService.SaveImageAsync(model.Image);
+        zadachaEntity.Image = await imageService.SaveImageAsync(model.Image!);
 
         context.Zadachi.Add(zadachaEntity);
         await context.SaveChangesAsync();

@@ -13,7 +13,7 @@ public class ImageService(IConfiguration configuration) : IImageService
         var sizes = configuration.GetRequiredSection("ImageSizes").Get<List<int>>();
         var dir = Path.Combine(Directory.GetCurrentDirectory(), configuration["ImagesDir"]!);
 
-        Task[] tasks = sizes
+        Task[] tasks = sizes!
             .AsParallel()
             .Select(size =>
             {
@@ -54,7 +54,7 @@ public class ImageService(IConfiguration configuration) : IImageService
         string imageName = $"{Path.GetRandomFileName()}.webp";
         var sizes = configuration.GetRequiredSection("ImageSizes").Get<List<int>>();
 
-        Task[] tasks = sizes
+        Task[] tasks = sizes!
             .AsParallel()
             .Select(s => SaveImageAsync(bytes, imageName, s))
             .ToArray();
