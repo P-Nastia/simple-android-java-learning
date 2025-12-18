@@ -19,7 +19,10 @@ import com.example.mytaskmanager.config.Config;
 import com.example.mytaskmanager.dto.zadachi.ZadachaItemDTO;
 import com.example.mytaskmanager.network.RetrofitClient;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -79,72 +82,65 @@ public class AddTaskActivity extends BaseActivity {
     }
 
     private void uploadTask(String title, Uri imageUri) {
-        String mimeType = getContentResolver().getType(imageUri);
-        if (mimeType == null) mimeType = "image/jpeg";
+        try {
+            String mimeType = getContentResolver().getType(imageUri);
+            if (mimeType == null) mimeType = "image/jpeg";
 
-        RequestBody titlePart =
-                RequestBody.create(title, MultipartBody.FORM);
+            RequestBody titlePart =
+                    RequestBody.create(title, MultipartBody.FORM);
 
-//        RequestBody imageBody =
-//                new UriRequestBody(this, imageUri, mimeType);
+            InputStream inputStream =
+                    getContentResolver().openInputStream(imageUri);
 
-//        MultipartBody.Part imagePart =
-//                MultipartBody.Part.createFormData(
-//                        "Image",
-//                        FileUtil.getFileName(this, imageUri),
-//                        imageBody
-//                );
+            byte[] imageBytes = readBytes(inputStream);
 
-        MultipartBody.Part imagePart = null;
-        if(imageUri != null) {
-            String imagePath = getImagePath(imageUri);
-            if (imagePath != null) {
-                File file = new File(imagePath);
-                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-                imagePart = MultipartBody.Part.createFormData("image", file.getName(), requestBody);
-            }
-        }
+            RequestBody imageBody =
+                    RequestBody.create(imageBytes, MediaType.parse(mimeType));
 
-        RetrofitClient.getInstance()
-                .getZadachiApi()
-                .create(titlePart, imagePart)
-                .enqueue(new Callback<ZadachaItemDTO>() {
-                    @Override
-                    public void onResponse(Call<ZadachaItemDTO> call, Response<ZadachaItemDTO> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            toast("Задача створена");
-                            //setResult(RESULT_OK);
-//                            finish();
-                            goToMainActivity();
-                        } else if (response.isSuccessful() && response.body() == null) {
-                            Log.d("AddTaskActivity", "Response successful but body is null. Code: " + response.code());
-                            toast("Задача створена");
-                            //setResult(RESULT_OK);
-//                            finish();
-                            goToMainActivity();
-                        } else {
-                            String errorBody = "";
-                            try {
-                                if (response.errorBody() != null) {
-                                    errorBody = response.errorBody().string();
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
+            MultipartBody.Part imagePart =
+                    MultipartBody.Part.createFormData(
+                            "image",
+                            "image.jpg",
+                            imageBody
+                    );
+
+            RetrofitClient.getInstance()
+                    .getZadachiApi()
+                    .create(titlePart, imagePart)
+                    .enqueue(new Callback<ZadachaItemDTO>() {
+                        @Override
+                        public void onResponse(Call<ZadachaItemDTO> call,
+                                               Response<ZadachaItemDTO> response) {
+                            if (response.isSuccessful()) {
+                                toast("Задача створена");
+                                goToMainActivity();
+                            } else {
+                                toast("Server error: " + response.code());
                             }
-                            Log.e("AddTaskActivity", "Server error: " + response.code() + ", body: " + errorBody);
-                            toast("Помилка сервера: " + response.code());
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<ZadachaItemDTO> call, Throwable t) {
-                        Log.e("AddTaskActivity", "onFailure type: " + t.getClass().getName());
-                        Log.e("AddTaskActivity", "message: " + t.getMessage(), t);
-                        toast("Помилка: " + t.getMessage());
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<ZadachaItemDTO> call, Throwable t) {
+                            Log.e("AddTaskActivity", "Upload failed", t);
+                            toast("Помилка: " + t.getMessage());
+                        }
+                    });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            toast("Помилка читання зображення");
+        }
     }
 
+    private byte[] readBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[4096];
+        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        return buffer.toByteArray();
+    }
 
     private String getImagePath(Uri uri) {
         String[] projection = {MediaStore.Images.Media.DATA};
