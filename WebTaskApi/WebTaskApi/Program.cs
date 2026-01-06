@@ -89,4 +89,6 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseSwagger();
 app.UseSwaggerUI();
 
+await app.SeedDataAsync();
+
 app.Run();
