@@ -36,17 +36,6 @@ public class ZadachiController(IZadachiService zadachiService) : ControllerBase
         return Ok();
     }
 
-    [HttpDelete("range")]
-    public async Task<IActionResult> DeleteRange([FromBody] List<long> ids)
-    {
-        var res = await zadachiService.DeleteRangeZadachiAsync(ids);
-        if (!res)
-        {
-            return NotFound();
-        }
-        return Ok();
-    }
-
     [HttpPut()]
     public async Task<IActionResult> Put([FromForm] ZadachaUpdateModel model)
     {
