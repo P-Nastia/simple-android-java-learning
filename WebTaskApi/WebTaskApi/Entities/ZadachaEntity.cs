@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WebTaskApi.Entities.Identity;
 
 namespace WebTaskApi.Entities;
 
@@ -11,4 +12,8 @@ public class ZadachaEntity : BaseEntity<long>
 
     [StringLength(200)]
     public string Image { get; set; } = String.Empty;
+
+    [ForeignKey(nameof(User))]
+    public long UserId { get; set; }
+    public UserEntity? User { get; set; }
 }

@@ -260,7 +260,12 @@ namespace WebTaskApi.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("tbl_zadacha");
                 });
@@ -320,6 +325,17 @@ namespace WebTaskApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WebTaskApi.Entities.ZadachaEntity", b =>
+                {
+                    b.HasOne("WebTaskApi.Entities.Identity.UserEntity", "User")
+                        .WithMany("Zadachas")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("WebTaskApi.Entities.Identity.RoleEntity", b =>
                 {
                     b.Navigation("UserRoles");
@@ -328,6 +344,8 @@ namespace WebTaskApi.Migrations
             modelBuilder.Entity("WebTaskApi.Entities.Identity.UserEntity", b =>
                 {
                     b.Navigation("UserRoles");
+
+                    b.Navigation("Zadachas");
                 });
 #pragma warning restore 612, 618
         }
