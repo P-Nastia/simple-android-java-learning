@@ -195,4 +195,8 @@ public class RegisterActivity extends BaseActivity {
         );
     }
 
+    public void onBackToLoginClick(View view) {
+        goToLogin();
+    }
+
 }

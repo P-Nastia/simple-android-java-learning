@@ -45,8 +45,8 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        if(HomeApplication.getInstance().isAuth())
-            goToMainActivity();
+//        if(HomeApplication.getInstance().isAuth())
+//            goToMainActivity();
 
         initViews();
         initValidator();
@@ -109,5 +109,9 @@ public class LoginActivity extends BaseActivity {
                                 .addRule(new RequiredRule("Введіть пароль"))
                                 .addRule(new MinLengthRule(6, "Мінімум 6 символів"))
                 );
+    }
+
+    public void onGoToRegisterClick(View view) {
+        goToRegistration();
     }
 }
