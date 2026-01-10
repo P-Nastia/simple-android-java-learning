@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebTaskApi.Interfaces;
 using WebTaskApi.Models.Zadacha;
@@ -7,6 +8,7 @@ namespace WebTaskApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ZadachiController(IZadachiService zadachiService) : ControllerBase
 {
 
