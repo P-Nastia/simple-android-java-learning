@@ -21,6 +21,7 @@ public class ZadachiController(IZadachiService zadachiService) : ControllerBase
     }
 
     [HttpPost()]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> Post([FromForm] ZadachaCreateModel model)
     {
         var res = await zadachiService.CreateZadachyAsync(model);
